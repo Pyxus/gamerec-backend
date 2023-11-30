@@ -6,7 +6,7 @@ namespace GameRec.Api.Repositories
 {
     public class IGDBClient
     {
-        private Auth? _auth;
+        private Auth _auth = new();
         private readonly string _clientId;
         private readonly string _clientSecret;
         private readonly HttpClient _httpClient = new();
@@ -30,7 +30,7 @@ namespace GameRec.Api.Repositories
                 if (content != null)
                 {
                     _auth = JsonSerializer.Deserialize<Auth>(content);
-                    Console.WriteLine(_auth?.AccessToken);
+                    Console.WriteLine(_auth.AccessToken);
                 }
             }
             catch (Exception e)
@@ -41,15 +41,19 @@ namespace GameRec.Api.Repositories
 
         public async Task<T?> Query<T>(string endpoint, string body)
         {
-            if (_auth == null)
+            if (!_auth.IsValid())
+            {
+                Console.WriteLine("Auth invalid");
                 return default;
+            }
+
 
             var httpRequestMessage = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"https://api.igdb.com/v4/{endpoint}"),
                 Headers = {
-                    { "Authorization", $"{_auth?.TokenType} {_auth?.AccessToken}" },
+                    { "Authorization", $"{_auth.TokenType} {_auth.AccessToken}" },
                     { "Client-ID", $"{_clientId}" }
                 },
                 Content = new StringContent(body)
