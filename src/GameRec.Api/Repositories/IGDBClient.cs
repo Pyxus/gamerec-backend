@@ -23,7 +23,7 @@ namespace GameRec.Api.Repositories
             var endpoint = $"https://id.twitch.tv/oauth2/token?{endpointParams}";
             var response = await _httpClient.PostAsync(endpoint, null);
 
-            try
+            if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -33,9 +33,9 @@ namespace GameRec.Api.Repositories
                     Console.WriteLine(_auth.AccessToken);
                 }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine(e);
+                Console.WriteLine("Failed to refresh auth");
             }
         }
 
