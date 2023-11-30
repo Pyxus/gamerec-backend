@@ -56,6 +56,12 @@ namespace GameRec.Api.Repositories
                 RefreshedAt = DateTime.Now;
             }
 
+            public bool IsValid()
+            {
+                var timeSinceRefresh = RefreshedAt - DateTime.Now;
+                return timeSinceRefresh.Seconds < ExpiresIn;
+            }
+
         }
     }
 }
