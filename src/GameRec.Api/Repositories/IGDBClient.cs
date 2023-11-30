@@ -39,6 +39,37 @@ namespace GameRec.Api.Repositories
             }
         }
 
+        public async Task<T?> Query<T>(string endpoint, string body)
+        {
+            if (_auth == null)
+                return default;
+
+            var httpRequestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"https://api.igdb.com/v4/{endpoint}"),
+                Headers = {
+                    { "Authorization", $"{_auth?.TokenType} {_auth?.AccessToken}" },
+                    { "Client-ID", $"{_clientId}" }
+                },
+                Content = new StringContent(body)
+            };
+
+            var response = await _httpClient.SendAsync(httpRequestMessage);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode && content != null)
+            {
+                Console.WriteLine(content);
+                return JsonSerializer.Deserialize<T>(content);
+            }
+            else
+            {
+                Console.WriteLine("Post request failed. IGDB could not be queried");
+                return default;
+            }
+        }
+
 
         private struct Auth
         {

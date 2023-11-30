@@ -2,15 +2,19 @@ using GameRec.Api.Repositories;
 
 GameRec.Api.Util.DotEnv.Load();
 
+
+
 #region Testing
 var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
 var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
 
 if (clientId != null && clientSecret != null)
 {
+
     var igdbClient = new IGDBClient(clientId, clientSecret);
 
     await igdbClient.RefreshAuth();
+    var res = await igdbClient.Query<QueryTest[]>("games", "fields name;");
 }
 
 #endregion
@@ -42,3 +46,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+struct QueryTest
+{
+    public int id = 0;
+    public string name = "";
+
+    public QueryTest() { }
+}
