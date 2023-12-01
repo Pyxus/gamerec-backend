@@ -3,22 +3,6 @@ using GameRec.Api.Repositories;
 GameRec.Api.Util.DotEnv.Load();
 
 
-
-#region Testing
-var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
-var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
-
-if (clientId != null && clientSecret != null)
-{
-
-    var igdbClient = new IGDBClient(clientId, clientSecret);
-
-    await igdbClient.RefreshAuth();
-    var res = await igdbClient.Query<QueryTest[]>("games", "fields name;");
-}
-
-#endregion
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -28,9 +12,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton(provider =>
+{
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
+    var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
+    return new IGDBClient(httpClientFactory, clientId!, clientSecret!);
+});
 
 var app = builder.Build();
-app.MapHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -39,12 +29,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.MapHealthChecks("/health");
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
 
 struct QueryTest

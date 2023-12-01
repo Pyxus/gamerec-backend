@@ -9,19 +9,21 @@ namespace GameRec.Api.Repositories
         private Auth _auth = new();
         private readonly string _clientId;
         private readonly string _clientSecret;
-        private readonly HttpClient _httpClient = new();
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public IGDBClient(string twitchId, string twitchSecret)
+        public IGDBClient(IHttpClientFactory clientFactory, string twitchId, string twitchSecret)
         {
             _clientId = twitchId;
             _clientSecret = twitchSecret;
+            _httpClientFactory = clientFactory;
         }
 
         public async Task RefreshAuth()
         {
             var endpointParams = $"client_id={_clientId}&client_secret={_clientSecret}&grant_type=client_credentials";
             var endpoint = $"https://id.twitch.tv/oauth2/token?{endpointParams}";
-            var response = await _httpClient.PostAsync(endpoint, null);
+            using var client = _httpClientFactory.CreateClient();
+            var response = await client.PostAsync(endpoint, null);
 
             if (response.IsSuccessStatusCode)
             {
@@ -59,7 +61,8 @@ namespace GameRec.Api.Repositories
                 Content = new StringContent(body)
             };
 
-            var response = await _httpClient.SendAsync(httpRequestMessage);
+            using var client = _httpClientFactory.CreateClient();
+            var response = await client.SendAsync(httpRequestMessage);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode && content != null)
