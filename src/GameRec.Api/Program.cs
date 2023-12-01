@@ -5,8 +5,6 @@ GameRec.Api.Util.DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -22,7 +20,11 @@ builder.Services.AddSingleton(provider =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.MapHealthChecks("/health");
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,16 +32,4 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapHealthChecks("/health");
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
 app.Run();
-
-struct QueryTest
-{
-    public int id = 0;
-    public string name = "";
-
-    public QueryTest() { }
-}
