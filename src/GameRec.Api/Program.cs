@@ -1,27 +1,35 @@
+using GameRec.Api.Clients;
+
+GameRec.Api.Util.DotEnv.Load();
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddHealthChecks();
-var app = builder.Build();
-app.MapHealthChecks("/health");
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton(provider =>
+{
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
+    var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
+    return new IgdbClient(httpClientFactory, clientId!, clientSecret!);
+});
 
-// Configure the HTTP request pipeline.
+var app = builder.Build();
+
+app.MapHealthChecks("/health");
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();
