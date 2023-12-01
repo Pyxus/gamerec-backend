@@ -79,7 +79,16 @@ namespace GameRec.Api.Clients
 
         private struct Auth
         {
-            public readonly bool IsValid { get => (RefreshedAt - DateTime.Now).Seconds < ExpiresIn; }
+            public readonly bool IsValid
+            {
+                get
+                {
+                    var isNotExpired = (RefreshedAt - DateTime.Now).Seconds < ExpiresIn;
+                    var isAccessTokenValid = AccessToken.Length > 0;
+                    return isAccessTokenValid && isNotExpired;
+                }
+            }
+
             [JsonPropertyName("access_token")]
             public string AccessToken { get; set; } = "";
             [JsonPropertyName("expires_in")]
