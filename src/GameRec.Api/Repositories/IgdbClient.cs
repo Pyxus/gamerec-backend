@@ -43,12 +43,11 @@ namespace GameRec.Api.Repositories
 
         public async Task<T?> Query<T>(string endpoint, string body)
         {
-            if (!_auth.IsValid())
+            if (!_auth.IsValid)
             {
                 Console.WriteLine("Auth invalid");
                 return default;
             }
-
 
             var httpRequestMessage = new HttpRequestMessage
             {
@@ -80,6 +79,7 @@ namespace GameRec.Api.Repositories
 
         private struct Auth
         {
+            public readonly bool IsValid { get => (RefreshedAt - DateTime.Now).Seconds < ExpiresIn; }
             [JsonPropertyName("access_token")]
             public string AccessToken { get; set; } = "";
             [JsonPropertyName("expires_in")]
@@ -92,12 +92,6 @@ namespace GameRec.Api.Repositories
             public Auth()
             {
                 RefreshedAt = DateTime.Now;
-            }
-
-            public bool IsValid()
-            {
-                var timeSinceRefresh = RefreshedAt - DateTime.Now;
-                return timeSinceRefresh.Seconds < ExpiresIn;
             }
 
         }
