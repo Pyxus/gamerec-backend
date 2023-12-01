@@ -18,6 +18,11 @@ namespace GameRec.Api.Clients
             _httpClientFactory = clientFactory;
         }
 
+        public bool HasValidAuth()
+        {
+            return _auth.IsValid;
+        }
+
         public async Task RefreshAuth()
         {
             var endpointParams = $"client_id={_clientId}&client_secret={_clientSecret}&grant_type=client_credentials";
@@ -32,7 +37,6 @@ namespace GameRec.Api.Clients
                 if (content != null)
                 {
                     _auth = JsonSerializer.Deserialize<Auth>(content);
-                    Console.WriteLine(_auth.AccessToken);
                 }
             }
             else

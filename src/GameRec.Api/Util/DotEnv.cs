@@ -7,7 +7,7 @@ namespace GameRec.Api.Util
         {
             var root = Directory.GetCurrentDirectory();
             var filePath = Path.Combine(root, ".env");
-
+            Console.WriteLine(filePath);
             if (!File.Exists(filePath))
                 return;
 
