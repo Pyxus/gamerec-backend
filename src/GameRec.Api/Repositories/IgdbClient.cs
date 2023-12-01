@@ -4,14 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace GameRec.Api.Repositories
 {
-    public class IGDBClient
+    public class IgdbClient
     {
         private Auth _auth = new();
         private readonly string _clientId;
         private readonly string _clientSecret;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public IGDBClient(IHttpClientFactory clientFactory, string twitchId, string twitchSecret)
+        public IgdbClient(IHttpClientFactory clientFactory, string twitchId, string twitchSecret)
         {
             _clientId = twitchId;
             _clientSecret = twitchSecret;

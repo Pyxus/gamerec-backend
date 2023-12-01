@@ -17,7 +17,7 @@ builder.Services.AddSingleton(provider =>
     var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
     var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
     var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
-    return new IGDBClient(httpClientFactory, clientId!, clientSecret!);
+    return new IgdbClient(httpClientFactory, clientId!, clientSecret!);
 });
 
 var app = builder.Build();
