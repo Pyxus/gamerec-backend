@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace GameRec.Api.Repositories
+namespace GameRec.Api.Clients
 {
     public class IgdbClient
     {

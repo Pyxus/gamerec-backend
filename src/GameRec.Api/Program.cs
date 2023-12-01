@@ -1,4 +1,4 @@
-using GameRec.Api.Repositories;
+using GameRec.Api.Clients;
 
 GameRec.Api.Util.DotEnv.Load();
 
