@@ -32,5 +32,22 @@ namespace GameRec.Test
             await _igdbClient.RefreshAuth();
             Assert.That(_igdbClient.HasValidAuth(), "RefreshAuth failed to produce valid auth.");
         }
+
+        [Test]
+        public async Task Query_ValidEndpointAndBody_ReturnAnyResult()
+        {
+            await _igdbClient.RefreshAuth();
+            Assert.That(_igdbClient.HasValidAuth(), "RefreshAuth failed to produce valid auth.");
+
+            var res = await _igdbClient.Query<IgdbQueryResult[]>("games", "fields id; where id = 1;");
+            Assert.That(res, Is.Not.Empty, "Query failed to return any result");
+        }
+    }
+
+    struct IgdbQueryResult
+    {
+        public int id = 0;
+
+        public IgdbQueryResult() { }
     }
 }

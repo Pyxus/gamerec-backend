@@ -10,12 +10,14 @@ namespace GameRec.Api.Clients
         private readonly string _clientId;
         private readonly string _clientSecret;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
 
         public IgdbClient(IHttpClientFactory clientFactory, string twitchId, string twitchSecret)
         {
             _clientId = twitchId;
             _clientSecret = twitchSecret;
             _httpClientFactory = clientFactory;
+            _httpClient = _httpClientFactory.CreateClient();
         }
 
         public bool HasValidAuth()
@@ -27,8 +29,8 @@ namespace GameRec.Api.Clients
         {
             var endpointParams = $"client_id={_clientId}&client_secret={_clientSecret}&grant_type=client_credentials";
             var endpoint = $"https://id.twitch.tv/oauth2/token?{endpointParams}";
-            using var client = _httpClientFactory.CreateClient();
-            var response = await client.PostAsync(endpoint, null);
+            //using var client = _httpClientFactory.CreateClient();
+            var response = await _httpClient.PostAsync(endpoint, null);
 
             if (response.IsSuccessStatusCode)
             {
@@ -64,13 +66,12 @@ namespace GameRec.Api.Clients
                 Content = new StringContent(body)
             };
 
-            using var client = _httpClientFactory.CreateClient();
-            var response = await client.SendAsync(httpRequestMessage);
+            //using var client = _httpClientFactory.CreateClient();
+            var response = await _httpClient.SendAsync(httpRequestMessage);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode && content != null)
             {
-                Console.WriteLine(content);
                 return JsonSerializer.Deserialize<T>(content);
             }
             else
