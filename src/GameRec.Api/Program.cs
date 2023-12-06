@@ -1,4 +1,5 @@
 using GameRec.Api.Clients;
+using GameRec.Api.Models;
 
 GameRec.Api.Util.DotEnv.Load();
 
@@ -17,6 +18,16 @@ builder.Services.AddSingleton(provider =>
     var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
     return new IgdbClient(httpClientFactory, clientId!, clientSecret!);
 });
+
+//  For Quick Testing
+var provider = builder.Services.BuildServiceProvider();
+var igdb = provider.GetService<IgdbClient>()!;
+
+await igdb.RefreshAuth();
+var games = await igdb.Query<Game[]>("games", "fields id, name;")!;
+Console.WriteLine(games?[0].Id);
+Console.WriteLine(games?[0].Name);
+Console.WriteLine(games?.Length);
 
 var app = builder.Build();
 

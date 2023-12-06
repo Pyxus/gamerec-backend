@@ -4,7 +4,7 @@ namespace GameRec.Api.Models
 {
     public struct Game
     {
-        enum Genre
+        public enum Genre
         {
             PointAndClick = 2,
             Fighting = 4,
@@ -31,7 +31,7 @@ namespace GameRec.Api.Models
             MOBA = 36,
         }
 
-        enum Theme
+        public enum Theme
         {
             Action = 1,
             Fantasy = 17,
@@ -57,7 +57,7 @@ namespace GameRec.Api.Models
             Romance = 44,
         }
 
-        enum PlayerPerspective
+        public enum PlayerPerspective
         {
             FirstPerson = 1,
             ThirdPerson,
@@ -68,7 +68,7 @@ namespace GameRec.Api.Models
             VR,
         }
 
-        enum GameMode
+        public enum GameMode
         {
             SinglePlayer = 1,
             Multiplayer,
@@ -78,7 +78,7 @@ namespace GameRec.Api.Models
             BattleRoyale,
         }
 
-        enum AgeRating
+        public enum AgeRating
         {
             Three = 1,
             Seven,
