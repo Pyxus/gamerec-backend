@@ -1,9 +1,9 @@
-namespace GameRec.Test;
-
 using GameRec.Api.Clients;
 using GameRec.Api.Models;
 using GameRec.Api.Services;
 using Moq;
+
+namespace GameRec.Test;
 
 [TestFixture]
 public class GameRecommendationServiceTests
