@@ -147,6 +147,10 @@ public struct Game
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int[] AgeRatings { get; set; } = Array.Empty<int>();
 
+    [JsonPropertyName("first_release_date")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public int FirstReleaseDate { get; set; } = 0;
+
     public Game()
     {
     }
