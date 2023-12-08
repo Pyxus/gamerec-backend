@@ -40,7 +40,7 @@ public class GameRecommendationServiceTests
     {
 
         var games = new Game[]{
-            new Game{
+            new() {
                 Name = "Test",
                 Genres = new int[]{(int)Game.Genre.PointAndClick},
                 Themes = new int[]{(int)Game.Theme.Action},
@@ -65,7 +65,7 @@ public class GameRecommendationServiceTests
     public void GenerateUserProfileVector_RatedGameArray_ReturnExpectedVector()
     {
         var games = new RatedGame[]{
-            new RatedGame{
+            new() {
                 Rating = 1.0,
                 Game = new Game{
                     Name = "Test",
