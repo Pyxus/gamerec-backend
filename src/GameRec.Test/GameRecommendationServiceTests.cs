@@ -109,6 +109,14 @@ public class GameRecommendationServiceTests
         Assert.That(candidateGames, Is.Not.Empty);
     }
 
+    [Test]
+    public async Task GetRecommendedGames_InputGames_ReturnAnyRecommendations()
+    {
+        const int bloodBorneId = 7334;
+        var recommendedGames = await _gameRecService.GetRecommendedGames(new Dictionary<int, double> { { bloodBorneId, 1.0 } });
+        Assert.That(recommendedGames, Is.Not.Empty);
+    }
+
     private int GetGenreStartIndex() => 0;
     private int GetThemeStartIndex() => _genres.Length;
     private int GetPerspectiveStartIndex() => GetThemeStartIndex() + _themes.Length;

@@ -11,6 +11,26 @@ public class GameRecommendationService
     {
         _igdbClient = igdbClient;
     }
+    public async Task<RatedGame[]> GetRecommendedGames(Dictionary<int, double> ratingById)
+    {
+        var gameIds = ratingById.Keys.ToArray();
+        var inputGames = await _igdbClient.FindGamesFromIds(gameIds);
+        var ratedGames = inputGames.Select(g => new RatedGame(g, ratingById[g.Id])).ToArray();
+        var candidateGames = await FindCandidateGames(inputGames);
+        var candidateMatrix = CreateFeatureMatrix(candidateGames);
+        var userProfileVector = GenerateUserProfileVector(ratedGames);
+        var recommendedGamesVector = candidateMatrix * userProfileVector;
+        var recommendedGames = new RatedGame[recommendedGamesVector.Count];
+
+        for (int i = 0; i < recommendedGamesVector.Count; i++)
+        {
+            recommendedGames[i] = new RatedGame(candidateGames[i], (double)recommendedGamesVector[i].Real);
+        }
+
+        var orderedRecommendedGames = recommendedGames.OrderByDescending(rg => rg.Rating).ToArray();
+
+        return orderedRecommendedGames ?? Array.Empty<RatedGame>();
+    }
 
     public async Task<Game[]> FindCandidateGames(Game[] inputGames)
     {
@@ -28,6 +48,7 @@ public class GameRecommendationService
             limit 500;
             ";
         var games = await _igdbClient.Query<Game[]>("games", query);
+
 
         return games ?? Array.Empty<Game>();
     }
