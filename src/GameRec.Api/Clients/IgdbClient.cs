@@ -81,7 +81,7 @@ public class IgdbClient
         }
     }
 
-    public async Task<Game[]?> FindGamesFromIds(int[] gameIds)
+    public async Task<Game[]> FindGamesFromIds(int[] gameIds)
     {
         var whereIds = string.Join(", ", gameIds);
         var query =
@@ -90,7 +90,9 @@ public class IgdbClient
             where id = ({whereIds});
             limit 500;
             ";
-        return await Query<Game[]>("games", query);
+        var games = await Query<Game[]>("games", query);
+
+        return games ?? Array.Empty<Game>();
     }
 
     private struct Auth
