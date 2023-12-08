@@ -18,7 +18,7 @@ public class GameRecommendationServiceTests
     private Mock<IHttpClientFactory> _httpClientFactoryMock;
 
     [SetUp]
-    public void Setup()
+    public async Task Setup()
     {
         var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
         var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
@@ -31,6 +31,7 @@ public class GameRecommendationServiceTests
         _httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
 
         var igdbClient = new IgdbClient(_httpClientFactoryMock.Object, clientId, clientSecret);
+        await igdbClient.RefreshAuth();
         _gameRecService = new GameRecommendationService(igdbClient);
     }
 
@@ -88,6 +89,24 @@ public class GameRecommendationServiceTests
             Assert.That(userProfileVector[GetGameModeStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'single player' game mode column to contain value of {weightPerFeature}");
             Assert.That(userProfileVector[GetAgeRatingStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'three' age rating column to contain value of {weightPerFeature}");
         });
+    }
+
+    [Test]
+    public async Task FindCandidateGames_InputGames_ReturnAnyCandidates()
+    {
+        var games = new Game[]{
+            new() {
+                Name = "Test",
+                Genres = new int[]{(int)Game.Genre.PointAndClick},
+                Themes = new int[]{(int)Game.Theme.Action},
+                PlayerPerspectives = new int[]{(int)Game.PlayerPerspective.FirstPerson},
+                GameModes = new int[]{(int)Game.GameMode.SinglePlayer},
+                AgeRatings = new int[]{(int)Game.AgeRating.Three},
+            }
+        };
+        var candidateGames = await _gameRecService.FindCandidateGames(games);
+
+        Assert.That(candidateGames, Is.Not.Empty);
     }
 
     private int GetGenreStartIndex() => 0;

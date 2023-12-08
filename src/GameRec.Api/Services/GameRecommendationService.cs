@@ -12,6 +12,26 @@ public class GameRecommendationService
         _igdbClient = igdbClient;
     }
 
+    public async Task<Game[]> FindCandidateGames(Game[] inputGames)
+    {
+        var featureSet = CreateFeatureSet(inputGames);
+        var query =
+            @$"
+            fields name, genres, themes, player_perspectives,  game_modes, age_ratings, first_release_date;
+            where genres =
+                ({string.Join(", ", featureSet.Genres)})
+                & themes = ({string.Join(", ", featureSet.Themes)})
+                & player_perspectives = ({string.Join(", ", featureSet.PlayerPerspectives)})
+                & game_modes = ({string.Join(", ", featureSet.GameModes)})
+                & id != ({string.Join(", ", inputGames.Select(game => game.Id))})
+                & rating >= 6;
+            limit 500;
+            ";
+        var games = await _igdbClient.Query<Game[]>("games", query);
+
+        return games ?? Array.Empty<Game>();
+    }
+
     public static SparseMatrix CreateFeatureMatrix(Game[] games)
     {
         var genres = Enum.GetValues<Game.Genre>();
@@ -82,5 +102,30 @@ public class GameRecommendationService
         var userProfileMatrix = weightedFeatureVector / weightedFeatureVector.Sum();
 
         return (DenseVector)userProfileMatrix;
+    }
+
+    private static FeatureSet CreateFeatureSet(Game[] games)
+    {
+        var set = new FeatureSet();
+
+        foreach (var game in games)
+        {
+            set.Genres.UnionWith(game.Genres);
+            set.Themes.UnionWith(game.Themes);
+            set.PlayerPerspectives.UnionWith(game.PlayerPerspectives);
+            set.GameModes.UnionWith(game.GameModes);
+            set.AgeRatings.UnionWith(game.AgeRatings);
+        }
+
+        return set;
+    }
+
+    private class FeatureSet
+    {
+        public HashSet<int> Genres = new();
+        public HashSet<int> Themes = new();
+        public HashSet<int> PlayerPerspectives = new();
+        public HashSet<int> GameModes = new();
+        public HashSet<int> AgeRatings = new();
     }
 }
