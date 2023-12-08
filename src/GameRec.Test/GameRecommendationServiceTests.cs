@@ -60,6 +60,36 @@ public class GameRecommendationServiceTests
         });
     }
 
+    [Test]
+    public void GenerateUserProfileVector_RatedGameArray_ReturnExpectedVector()
+    {
+        var games = new RatedGame[]{
+            new RatedGame{
+                Rating = 1.0,
+                Game = new Game{
+                    Name = "Test",
+                    Genres = new int[]{(int)Game.Genre.PointAndClick},
+                    Themes = new int[]{(int)Game.Theme.Action},
+                    PlayerPerspectives = new int[]{(int)Game.PlayerPerspective.FirstPerson},
+                    GameModes = new int[]{(int)Game.GameMode.SinglePlayer},
+                    AgeRatings = new int[]{(int)Game.AgeRating.Three},
+                }
+
+            }
+        };
+
+        var weightPerFeature = 1 / 5.0;
+        var userProfileVector = GameRecommendationService.GenerateUserProfileVector(games);
+        Assert.Multiple(() =>
+        {
+            Assert.That(userProfileVector[GetGenreStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'point and click' genre column to contain value of {weightPerFeature}");
+            Assert.That(userProfileVector[GetThemeStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'action' theme column to contain value of {weightPerFeature}");
+            Assert.That(userProfileVector[GetPerspectiveStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'first person' perspective column to contain value of {weightPerFeature}");
+            Assert.That(userProfileVector[GetGameModeStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'single player' game mode column to contain value of {weightPerFeature}");
+            Assert.That(userProfileVector[GetAgeRatingStartIndex()].Real, Is.EqualTo(weightPerFeature), $"Expected 'three' age rating column to contain value of {weightPerFeature}");
+        });
+    }
+
     private int GetGenreStartIndex() => 0;
     private int GetThemeStartIndex() => _genres.Length;
     private int GetPerspectiveStartIndex() => GetThemeStartIndex() + _themes.Length;

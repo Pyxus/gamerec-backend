@@ -66,8 +66,21 @@ public class GameRecommendationService
         return featureMatrix;
     }
 
-    public static void CalcProfileMatrix()
+    public static DenseVector GenerateUserProfileVector(RatedGame[] ratedGames)
     {
+        var games = new Game[ratedGames.Length];
+        var userRatingVector = new DenseVector(ratedGames.Length);
 
+        for (int i = 0; i < ratedGames.Length; i++)
+        {
+            games[i] = ratedGames[i].Game;
+            userRatingVector[i] = ratedGames[i].Rating;
+        }
+
+        var featureMatrix = CreateFeatureMatrix(games);
+        var weightedFeatureVector = featureMatrix.Transpose() * userRatingVector;
+        var userProfileMatrix = weightedFeatureVector / weightedFeatureVector.Sum();
+
+        return (DenseVector)userProfileMatrix;
     }
 }
