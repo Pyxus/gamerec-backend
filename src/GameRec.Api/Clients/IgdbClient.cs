@@ -1,6 +1,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GameRec.Api.Models;
 
 namespace GameRec.Api.Clients;
 public class IgdbClient
@@ -80,6 +81,17 @@ public class IgdbClient
         }
     }
 
+    public async Task<Game[]?> FindGamesFromIds(int[] gameIds)
+    {
+        var whereIds = string.Join(", ", gameIds);
+        var query =
+            @$"
+            fields name, genres, themes, player_perspectives,  game_modes, age_ratings, first_release_date;
+            where id = ({whereIds});
+            limit 500;
+            ";
+        return await Query<Game[]>("games", query);
+    }
 
     private struct Auth
     {
