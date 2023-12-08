@@ -1,13 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace GameRec.Api.Models;
 
 public struct RatedGame
 {
-    public double Rating;
-    public Game Game;
+    [JsonPropertyName("rating")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public double Rating { get; set; }
 
-    public RatedGame(Game game, double rating)
-    {
-        Game = game;
-        Rating = rating;
-    }
+    [JsonPropertyName("game")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public Game Game { get; set; }
+
+    public RatedGame() { }
 }

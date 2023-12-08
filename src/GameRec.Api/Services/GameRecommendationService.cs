@@ -15,7 +15,7 @@ public class GameRecommendationService
     {
         var gameIds = ratingById.Keys.ToArray();
         var inputGames = await _igdbClient.FindGamesFromIds(gameIds);
-        var ratedGames = inputGames.Select(g => new RatedGame(g, ratingById[g.Id])).ToArray();
+        var ratedGames = inputGames.Select(g => new RatedGame { Game = g, Rating = ratingById[g.Id] }).ToArray();
         var candidateGames = await FindCandidateGames(inputGames);
         var candidateMatrix = CreateFeatureMatrix(candidateGames);
         var userProfileVector = GenerateUserProfileVector(ratedGames);
@@ -24,7 +24,7 @@ public class GameRecommendationService
 
         for (int i = 0; i < recommendedGamesVector.Count; i++)
         {
-            recommendedGames[i] = new RatedGame(candidateGames[i], (double)recommendedGamesVector[i].Real);
+            recommendedGames[i] = new RatedGame { Game = candidateGames[i], Rating = recommendedGamesVector[i].Real };
         }
 
         var orderedRecommendedGames = recommendedGames.OrderByDescending(rg => rg.Rating).ToArray();
