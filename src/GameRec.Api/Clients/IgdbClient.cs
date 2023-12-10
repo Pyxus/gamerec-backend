@@ -95,6 +95,23 @@ public class IgdbClient
         return games ?? Array.Empty<Game>();
     }
 
+    public async Task<Game[]> SearchForGame(string name)
+    {
+        const int categoryMainGame = 0;
+
+        var query =
+            @$"
+            fields id, name, first_release_date;
+            where version_parent = null & category = {categoryMainGame} & first_release_date != null & name ~""{name}""*;
+            sort  rating desc;
+            limit 100;
+            ";
+
+        var games = await Query<Game[]>("games", query);
+
+        return games ?? Array.Empty<Game>();
+    }
+
     private struct Auth
     {
         public readonly bool IsValid
