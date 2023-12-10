@@ -34,6 +34,7 @@ public class GameRecommendationService
 
     public async Task<Game[]> FindCandidateGames(Game[] inputGames)
     {
+        const int categoryMainGame = 0;
         var featureSet = CreateFeatureSet(inputGames);
         var query =
             @$"
@@ -44,7 +45,8 @@ public class GameRecommendationService
                 & player_perspectives = ({string.Join(", ", featureSet.PlayerPerspectives)})
                 & game_modes = ({string.Join(", ", featureSet.GameModes)})
                 & id != ({string.Join(", ", inputGames.Select(game => game.Id))})
-                & rating >= 6;
+                & version_parent = null;
+            sort rating desc;
             limit 500;
             ";
         var games = await _igdbClient.Query<Game[]>("games", query);
