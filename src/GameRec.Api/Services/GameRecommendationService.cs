@@ -34,7 +34,6 @@ public class GameRecommendationService
 
     public async Task<Game[]> FindCandidateGames(Game[] inputGames)
     {
-        const int categoryMainGame = 0;
         var featureSet = CreateFeatureSet(inputGames);
         var query =
             @$"
