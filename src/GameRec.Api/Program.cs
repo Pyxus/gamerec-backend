@@ -21,6 +21,14 @@ builder.Services.AddSingleton(provider =>
 
     return igdbClient;
 });
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -28,6 +36,7 @@ app.MapHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors();
 
 if (app.Environment.IsDevelopment())
 {
