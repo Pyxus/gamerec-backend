@@ -22,7 +22,6 @@ public class GameRecommendationServiceTests
     {
         var clientId = Environment.GetEnvironmentVariable("TWITCH_CLIENT_ID");
         var clientSecret = Environment.GetEnvironmentVariable("TWITCH_CLIENT_SECRET");
-        var client = new HttpClient();
 
         Assert.That(clientId, Is.Not.Null, "TWITCH_CLIENT_ID envrionment variable is required.");
         Assert.That(clientSecret, Is.Not.Null, "TWITCH_CLIENT_SECRET environment variable is required.");
