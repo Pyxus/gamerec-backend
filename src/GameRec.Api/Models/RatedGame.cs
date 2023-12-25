@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace GameRec.Api.Models;
 
+/// <summary>
+/// Represents a rated game. Rating in this context is a weight, not a review rating.
+/// </summary>
 public struct RatedGame
 {
     [JsonPropertyName("rating")]

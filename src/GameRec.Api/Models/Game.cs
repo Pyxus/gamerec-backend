@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace GameRec.Api.Models;
 
+/// <summary>
+/// Represents an IGDB game with various attributes such as genres, themes, player perspectives, and more.
+/// </summary>
 public struct Game
 {
     public enum Genre
