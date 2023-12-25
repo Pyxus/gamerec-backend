@@ -18,7 +18,6 @@ namespace GameRec.Api.Controllers
         [HttpGet]
         public async Task<Game[]> Get([FromQuery] string name)
         {
-            Console.WriteLine(name);
             return await _igdbClient.SearchForGame(name);
         }
     }
