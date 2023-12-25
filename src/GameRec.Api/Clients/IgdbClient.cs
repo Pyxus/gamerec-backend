@@ -4,6 +4,10 @@ using System.Text.Json.Serialization;
 using GameRec.Api.Models;
 
 namespace GameRec.Api.Clients;
+
+/// <summary>
+/// Represents a client for interacting with the IGDB (Internet Game Database) API.
+/// </summary>
 public class IgdbClient
 {
     private Auth _auth = new();
@@ -19,12 +23,20 @@ public class IgdbClient
         _httpClientFactory = clientFactory;
         _httpClient = _httpClientFactory.CreateClient();
     }
-
+    /// <summary>
+    /// Checks if the current auth token is valid.
+    /// An auth token is considered valid if it has not exceeded its expiration time.
+    /// </summary>
+    /// <returns>True if the authentication is valid; otherwise, false.</returns>
     public bool HasValidAuth()
     {
         return _auth.IsValid;
     }
 
+    /// <summary>
+    /// Refreshes the auth token.
+    /// This method must be called before using any client functionality to generate the initial authentication token.
+    /// </summary>
     public async Task RefreshAuth()
     {
         var endpointParams = $"client_id={_clientId}&client_secret={_clientSecret}&grant_type=client_credentials";
@@ -47,6 +59,13 @@ public class IgdbClient
         }
     }
 
+    /// <summary>
+    /// Queries the IGDB API with the specified endpoint and request body.
+    /// </summary>
+    /// <typeparam name="T">The type of the expected response.</typeparam>
+    /// <param name="endpoint">The API endpoint.</param>
+    /// <param name="body">The request body.</param>
+    /// <returns>The deserialized response of type T.</returns>
     public async Task<T?> Query<T>(string endpoint, string body)
     {
         if (!_auth.IsValid)
@@ -81,6 +100,11 @@ public class IgdbClient
         }
     }
 
+    /// <summary>
+    /// Finds games based on an array of IGDB game IDs.
+    /// </summary>
+    /// <param name="gameIds">The array of game IDs to search for.</param>
+    /// <returns>An array of Game objects matching the specified IDs.</returns>
     public async Task<Game[]> FindGamesFromIds(int[] gameIds)
     {
         var whereIds = string.Join(", ", gameIds);
@@ -95,6 +119,12 @@ public class IgdbClient
         return games ?? Array.Empty<Game>();
     }
 
+    /// <summary>
+    /// Searches for games based on the provided name.
+    /// The specified name is used as a filter to narrow down results to those closely approximating the given name.
+    /// </summary>
+    /// <param name="name">The name of the game to search for.</param>
+    /// <returns>An array of Game objects approximating the specified name.</returns>
     public async Task<Game[]> SearchForGame(string name)
     {
         const int categoryMainGame = 0;
@@ -112,6 +142,9 @@ public class IgdbClient
         return games ?? Array.Empty<Game>();
     }
 
+    /// <summary>
+    /// Represents the auth token used by the IGDB client.
+    /// </summary>
     private struct Auth
     {
         public readonly bool IsValid
